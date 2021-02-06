@@ -1,0 +1,24 @@
+version: "3.4"
+
+services:
+  plex:
+    image: plexinc/pms-docker
+    container_name: plex
+    restart: unless-stopped
+    volumes:
+      - /mnt/media:/media
+      - ./config:/config
+      - ./transcode:/transcode
+      - ./tmp:/tmp
+    ports:
+      - 32402:32400
+    environment:
+      - TZ=$TZ
+      - HOSTNAME=Eknet40
+      - PLEX_CLAIM=claim-yGF6jbRZJcfX8wLSvSW1
+      - PLEX_UID=$PUID
+      - PLEX_GID=$PGID
+      - ADVERTISE_IP="192.168.86.10:32402" 
+      - ALLOWED_NETWORKS=192.168.86.0/24
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"

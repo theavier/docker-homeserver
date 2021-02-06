@@ -1,2 +1,1 @@
-# docker-homeserver
-with traefik
+# docker-plex
