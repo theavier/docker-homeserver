@@ -1,0 +1,28 @@
+version: '3.5'
+networks:
+  default: 
+    external:
+       name: ${NETWORK}
+services:
+  app:
+     image: linuxserver/heimdall:latest
+     container_name: ${LABEL}
+     restart: unless-stopped
+     volumes:
+       - ./config:/config
+     environment:
+       - PUID=$PUID
+       - PGID=$PGID
+       - TZ=$TZ
+     security_opt:
+       - no-new-privileges:true
+     labels:
+       - "traefik.enable=true"
+       - "traefik.http.routers.${LABEL}-rtr.entrypoints=https"
+       - "traefik.http.routers.${LABEL}-rtr.rule=Host(`${CNAME}.${DOMAINNAME}`)"
+       - "traefik.http.routers.${LABEL}-rtr.tls=true"
+       - "traefik.http.routers.${LABEL}-rtr.service=${LABEL}-svc"
+       - "traefik.http.services.${LABEL}-svc.loadbalancer.server.port=${INTERNALPORT}"
+       #comment below to disable login
+       - "traefik.http.routers.${LABEL}-rtr.middlewares=middlewares-basic-auth@file"
+

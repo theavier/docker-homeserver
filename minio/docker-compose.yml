@@ -1,0 +1,37 @@
+version: '3.7'
+
+networks:
+  proxy:
+    external:
+      name: t2_proxy
+
+services:
+  minio:
+    container_name: minio
+    #image: "dimianstudio/minio-arm"
+    image: minio/minio
+    networks: 
+      - proxy
+#    ports:
+#      - "9000:9000"
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+    #   - ./minio:/export
+       - /mnt/media/docker/minio:/export
+       - ./minio_config:/root/.minio
+    #   - /var/run/docker.sock:/var/run/docker.sock:ro
+    #   - ./minio_tmp:/tmp
+    environment:
+      MINIO_ACCESS_KEY: $MINIO_ACCESS_KEY
+      MINIO_SECRET_KEY: $MINIO_SECRET_KEY
+      MINIO_DOMAIN: $MINIO_DOMAIN
+    #  MINIO_HTTP_TRACE: /tmp/minio.log
+    command: server /export
+    labels:
+      - "traefik.enable=true"
+#      - "traefik.http.routers..minio-rtr.entrypoints=https"
+      - "traefik.http.routers.minio-rtr.rule=Host(`minio.$DOMAINNAME`)"
+      - "traefik.http.routers.minio-rtr.tls=true"
+      - "traefik.http.routers.minio-rtr.service=minio-svc"
+      - "traefik.http.services.minio-svc.loadbalancer.server.port=9000"
