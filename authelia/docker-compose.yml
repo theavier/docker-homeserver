@@ -1,0 +1,39 @@
+---
+version: '3.5'
+networks:
+  default:
+    external:
+      name: ${NETWORK}
+services:
+  authelia:
+     #image: authelia/authelia:4.2.0
+     image: authelia/authelia:latest
+     container_name: ${LABEL}
+     restart: unless-stopped
+     volumes:
+       - ./config:/config
+     environment:
+       - TZ=${TZ}
+     expose:
+       - 9091
+#     ports:
+#       - 9091:9091
+     labels:
+       - "traefik.enable=true"
+       - "traefik.http.routers.${LABEL}-rtr.entrypoints=https"
+       - "traefik.http.routers.${LABEL}-rtr.rule=Host(`${CNAME}.${DOMAINNAME}`)"
+       - "traefik.http.routers.${LABEL}-rtr.tls=true"
+       - "traefik.http.routers.${LABEL}-rtr.service=${LABEL}-svc"
+       - "traefik.http.services.${LABEL}-svc.loadbalancer.server.port=${INTERNALPORT}"
+       #middlewares
+       #uncomment below to disable login
+       #- "traefik.http.routers.${LABEL}-rtr.middlewares=middlewares-basic-auth@file"
+       - "traefik.http.routers.${LABEL}-rtr.middlewares=chain-authelia@file"
+       #uncomment to restrict traefik to localnetwork
+       #- "traefik.http.routers.${LABEL}-rtr.middlewares=onlyLocalNetwork@file"
+       #uncomment to autoupdate
+       #- "com.centurylinklabs.watchtower.enable=true"
+
+
+
+
