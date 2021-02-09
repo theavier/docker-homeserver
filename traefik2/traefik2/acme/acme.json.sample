@@ -1,0 +1,31 @@
+{
+  "dns-cloudflare": {
+    "Account": {
+      "Email": "<cloudflareemail>",
+      "Registration": {
+        "body": {
+          "status": "valid",
+          "contact": [
+            "mailto:<cloudflareemail>"
+          ]
+        },
+        "uri": "https://acme-v02.api.letsencrypt.org/acme/acct/88042994"
+      },
+      "PrivateKey": "<insertprivatekey>"
+      "KeyType": "4096"
+    },
+    "Certificates": [
+      {
+        "domain": {
+          "main": "<insertdomain>",
+          "sans": [
+            "*.<insertdomain>"
+          ]
+        },
+        "certificate":  "<insertcert>"
+        "key": "<insertkey>"
+        "Store": "default"
+      }
+    ]
+  }
+}

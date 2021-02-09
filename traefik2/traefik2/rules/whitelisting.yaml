@@ -1,0 +1,8 @@
+http:
+  middlewares:
+    onlyLocalNetwork:
+      ipWhiteList:
+        sourceRange:
+          - "192.168.86.0/24"
+        ipstrategy:
+          depth: 1
