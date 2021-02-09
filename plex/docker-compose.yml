@@ -14,8 +14,8 @@ services:
       - 32402:32400
     environment:
       - TZ=$TZ
-      - HOSTNAME=Eknet40
-      - PLEX_CLAIM=claim-yGF6jbRZJcfX8wLSvSW1
+      - HOSTNAME=$HOSTNAME
+      - PLEX_CLAIM=$PLEXCLAIM
       - PLEX_UID=$PUID
       - PLEX_GID=$PGID
       - ADVERTISE_IP="192.168.86.10:32402" 
