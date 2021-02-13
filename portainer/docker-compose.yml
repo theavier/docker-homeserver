@@ -1,0 +1,36 @@
+version: '3.5'
+networks:
+  default: 
+    external:
+       name: ${NETWORK}
+services:
+  app:
+     image: portainer/portainer:latest
+     container_name: ${LABEL}
+     restart: unless-stopped
+     ports:
+       - ${INTERNALPORT}:9000
+     command: -H unix:///var/run/docker.sock --no-auth
+     #--no-auth  --admin-password password
+     volumes:
+       - /var/run/docker.sock:/var/run/docker.sock:ro
+       - ./data:/data
+     environment:
+       - TZ=$TZ
+     #security_opt:
+     #  - no-new-privileges:true
+#     labels:
+#       - "traefik.enable=true"
+#       - "traefik.http.routers.${LABEL}-rtr.entrypoints=https"
+#       - "traefik.http.routers.${LABEL}-rtr.rule=Host(`${CNAME}.${DOMAINNAME}`)"
+#       - "traefik.http.routers.${LABEL}-rtr.tls=true"
+#       - "traefik.http.routers.${LABEL}-rtr.service=${LABEL}-svc"
+#       - "traefik.http.services.${LABEL}-svc.loadbalancer.server.port=${INTERNALPORT}"
+       #comment below to disable login
+#       - "traefik.http.routers.${LABEL}-rtr.middlewares=middlewares-basic-auth@file"
+       #- "traefik.http.middlewares.ipwhitelist-prom.ipwhitelist.sourcerange=192.168.86.0/24"
+       #- "traefik.http.middlewares.ipwhitelist-prom.ipwhitelist.ipstrategy.depth=1"
+
+
+
+
