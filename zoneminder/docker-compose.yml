@@ -1,0 +1,53 @@
+version: '2.4'
+networks:
+  default: 
+    external:
+       name: ${NETWORK}
+services:
+  app:
+     image: dlandon/zoneminder
+     container_name: ${LABEL}
+     #mem_limit: 1400M
+     #mem_reservation: 512M
+     #cpus: '0.8'
+     restart: unless-stopped
+     security_opt:
+       - no-new-privileges:true
+     #ports:
+     #  - 8443:443
+     #  - 9000:9000
+     environment:
+       - TZ=${TZ}
+       - SCHMEM=50%
+       - PUID=99
+       - PGID=100
+       - INSTALL_HOOK=0
+       - INSTALL_FACE=0
+       - INSTALL_TINY_YOLO=0
+       - INSTALL_YOLO=0
+      # - MULTI_PORT_START=0
+      # - MULTI_PORT_END=0
+     volumes:
+       - ./config_1:/config:rw
+       - ./data_1:/var/cache/zoneminder:rw
+     privileged: true
+     labels:
+       - "traefik.enable=true"
+       - "traefik.http.routers.${LABEL}-rtr.entrypoints=https"
+       - "traefik.http.routers.${LABEL}-rtr.rule=Host(`${CNAME}.${DOMAINNAME}`)"
+       - "traefik.http.routers.${LABEL}-rtr.tls=true"
+       - "traefik.http.routers.${LABEL}-rtr.service=${LABEL}-svc"
+       - "traefik.http.services.${LABEL}-svc.loadbalancer.server.port=${INTERNALPORT}"
+       #comment below to disable login
+      # - "traefik.http.routers.${LABEL}-rtr.middlewares=middlewares-basic-auth@file"
+       #- "traefik.http.middlewares.ipwhitelist-prom.ipwhitelist.sourcerange=192.168.86.0/24"
+       #- "traefik.http.middlewares.ipwhitelist-prom.ipwhitelist.ipstrategy.depth=1"
+       #add second port for eventnotifier
+       - "traefik.http.routers.${LABEL}-event-rtr.entrypoints=eventserver"
+       - "traefik.http.routers.${LABEL}-event-rtr.rule=Host(`${CNAME}.${DOMAINNAME}`)"
+       - "traefik.http.routers.${LABEL}-event-rtr.tls=true"
+       - "traefik.http.routers.${LABEL}-event-rtr.service=${LABEL}-event-svc"
+       - "traefik.http.services.${LABEL}-event-svc.loadbalancer.server.port=9000"
+
+
+

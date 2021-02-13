@@ -1,0 +1,47 @@
+version: '3.5'
+
+services:
+ transmission:
+  container_name: transmission
+  #image: haugene/transmission-openvpn:latest-armhf
+  image: haugene/transmission-openvpn:latest
+  cap_add:
+    - NET_ADMIN
+  devices:
+    - "/dev/net/tun"
+  restart: unless-stopped
+  ports:
+    - "9092:9091"
+    - "8888:8888"
+  dns:
+    - 8.8.8.8
+    - 8.8.4.4
+  volumes:
+    - /etc/localtime:/etc/localtime:ro
+    - /mnt/media/_down:/data
+  environment:
+    - OPENVPN_PROVIDER=NORDVPN
+    - OPENVPN_USERNAME=<usernameNordVPN>
+    - OPENVPN_PASSWORD=<passwordNordvpn>
+    - OPENVPN_OPTS=--inactive 3600 --ping 10 --ping-exit 60
+    - LOCAL_NETWORK=192.168.86.0/24
+
+ proxy:
+  container_name: transmission_proxy
+  #image: haugene/transmission-openvpn-proxy:latest-armhf
+  image: haugene/transmission-openvpn-proxy:latest
+  links:
+    - transmission
+  ports:
+    - "9090:8080"
+  volumes:
+    - /etc/localtime:/etc/localtime:ro
+
+ rss:
+  container_name: transmission_rss
+  #image: haugene/transmission-rss:latest-armhf
+  image: haugene/transmission-rss:latest
+  links:
+    - transmission
+  environment:
+    - RSS_URL=http://.../xxxxx.rss
