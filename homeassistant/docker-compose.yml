@@ -1,0 +1,39 @@
+---
+version: '3.5'
+networks:
+  default: 
+    external:
+      name: ${NETWORK}
+services:
+  ha_app:
+    image: homeassistant/home-assistant:stable
+    container_name: ${LABEL}
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - ./config:/config
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - TZ=${TZ}
+      - PUID=${PUID}
+      - PGID=${PGID}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.${LABEL}-rtr.entrypoints=https"
+      - "traefik.http.routers.${LABEL}-rtr.rule=Host(`${CNAME}.${DOMAINNAME}`)"
+      - "traefik.http.routers.${LABEL}-rtr.tls=true"
+      - "traefik.http.routers.${LABEL}-rtr.service=${LABEL}-svc"
+      - "traefik.http.services.${LABEL}-svc.loadbalancer.server.port=${INTERNALPORT}"
+      # uncomment to use .htpasswd login
+      #- "traefik.http.routers.${LABEL}-rtr.middlewares=middlewares-basic-auth@file"
+      # uncomment to use authelia
+      #- "traefik.http.routers.${LABEL}-rtr.middlewares=chain-authelia@file"
+      # uncomment to restrict traefik to localnetwork
+      #- "traefik.http.routers.${LABEL}-rtr.middlewares=onlyLocalNetwork@file"
+      # uncomment to autoupdate
+      #- "com.centurylinklabs.watchtower.enable=true"
+
+
+
+
