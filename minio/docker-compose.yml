@@ -1,27 +1,23 @@
 version: '3.7'
 
 networks:
-  proxy:
+  default:
     external:
-      name: t2_proxy
+      name: ${NETWORK}
 
 services:
   minio:
-    container_name: minio
-    #image: "dimianstudio/minio-arm"
+    container_name: ${LABEL}
+    #image: "dimianstudio/minio-arm" #for raspberry
     image: minio/minio
-    networks: 
-      - proxy
+    restart: unless-stopped
 #    ports:
 #      - "9000:9000"
     security_opt:
       - no-new-privileges:true
     volumes:
-    #   - ./minio:/export
        - /mnt/media/docker/minio:/export
        - ./minio_config:/root/.minio
-    #   - /var/run/docker.sock:/var/run/docker.sock:ro
-    #   - ./minio_tmp:/tmp
     environment:
       MINIO_ACCESS_KEY: $MINIO_ACCESS_KEY
       MINIO_SECRET_KEY: $MINIO_SECRET_KEY
@@ -30,8 +26,8 @@ services:
     command: server /export
     labels:
       - "traefik.enable=true"
-#      - "traefik.http.routers..minio-rtr.entrypoints=https"
-      - "traefik.http.routers.minio-rtr.rule=Host(`minio.$DOMAINNAME`)"
-      - "traefik.http.routers.minio-rtr.tls=true"
-      - "traefik.http.routers.minio-rtr.service=minio-svc"
-      - "traefik.http.services.minio-svc.loadbalancer.server.port=9000"
+      - "traefik.http.routers.${LABEL}-rtr.entrypoints=https"
+      - "traefik.http.routers.${LABEL}-rtr.rule=Host(`${CNAME}.$DOMAINNAME`)"
+      - "traefik.http.routers.${LABEL}-rtr.tls=true"
+      - "traefik.http.routers.${LABEL}-rtr.service=${LABEL}-svc"
+      - "traefik.http.services.${LABEL}-svc.loadbalancer.server.port=${INTERNALPORT}"
