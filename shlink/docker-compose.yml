@@ -1,0 +1,61 @@
+---
+version: '3.5'
+networks:
+  default: 
+    external:
+      name: ${NETWORK}
+services:
+  app_shlink:
+    image: shlinkio/shlink:stable
+    container_name: ${LABEL}
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+#    ports:
+#      - 8089:8080
+    environment:
+      SHORT_DOMAIN_HOST: ${SHORT_DOMAIN_HOST}
+      SHORT_DOMAIN_SCHEMA: https
+      GEOLITE_LICENSE_KEY: ${GEOLITE_LICENSE_KEY}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.${LABEL}-rtr.entrypoints=https"
+      - "traefik.http.routers.${LABEL}-rtr.rule=Host(`${CNAME}.${DOMAINNAME}`)"
+      - "traefik.http.routers.${LABEL}-rtr.tls=true"
+      - "traefik.http.routers.${LABEL}-rtr.service=${LABEL}-svc"
+      - "traefik.http.services.${LABEL}-svc.loadbalancer.server.port=${INTERNALPORT}"
+      # uncomment to use .htpasswd login
+      #- "traefik.http.routers.${LABEL}-rtr.middlewares=middlewares-basic-auth@file"
+      # uncomment to use authelia
+      #- "traefik.http.routers.${LABEL}-rtr.middlewares=chain-authelia@file"
+      # uncomment to restrict traefik to localnetwork
+      #- "traefik.http.routers.${LABEL}-rtr.middlewares=onlyLocalNetwork@file"
+      # uncomment to autoupdate
+      #- "com.centurylinklabs.watchtower.enable=true"
+
+  app_shlinkweb:
+    image: shlinkio/shlink-web-client
+    container_name: ${LABEL}_web
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+#    volumes:
+#      - .servers.json:/usr/share/nginx/html/servers.json:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.${LABEL}web-rtr.entrypoints=https"
+      - "traefik.http.routers.${LABEL}web-rtr.rule=Host(`${CNAMEWEB}.${DOMAINNAME}`)"
+      - "traefik.http.routers.${LABEL}web-rtr.tls=true"
+      - "traefik.http.routers.${LABEL}web-rtr.service=${LABEL}web-svc"
+      - "traefik.http.services.${LABEL}web-svc.loadbalancer.server.port=${INTERNALPORTWEB}"
+      # uncomment to use .htpasswd login
+      - "traefik.http.routers.${LABEL}web-rtr.middlewares=middlewares-basic-auth@file"
+      # uncomment to use authelia
+      #- "traefik.http.routers.${LABEL}web-rtr.middlewares=chain-authelia@file"
+      # uncomment to restrict traefik to localnetwork
+      #- "traefik.http.routers.${LABEL}web-rtr.middlewares=onlyLocalNetwork@file"
+      # uncomment to autoupdate
+      #- "com.centurylinklabs.watchtower.enable=true"
+
+
+
