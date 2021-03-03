@@ -1,0 +1,4 @@
+1. update sample.env with your parameters, cnames and geolite key
+2. change name sample.env .env
+3. after docker-compose up, cmd_api to get apikey to use when accessing admin
+
