@@ -1,4 +1,4 @@
-version: '3.5'
+version: '2'
 
 networks:
   default: 
@@ -7,8 +7,10 @@ networks:
 
 services:
   nextcloud_app:
-    image: nextcloud
+    #image: nextcloud:20.0.4
+    image: nextcloud:latest
     container_name: nextcloud
+    hostname: ${NEXTCLOUD_HOSTNAME}
     depends_on: 
       - nextcloud_db
     volumes:
@@ -23,6 +25,8 @@ services:
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_HOST=nextcloud_db:3306
+      - OVERWRITEPROTOCOL=https
+      - OVERWRITEHOST=${NEXTCLOUD_HOSTNAME}
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
@@ -33,16 +37,26 @@ services:
       - "traefik.http.routers.${LABEL}-rtr.tls=true"
       - "traefik.http.routers.${LABEL}-rtr.service=${LABEL}-svc"
       - "traefik.http.services.${LABEL}-svc.loadbalancer.server.port=${INTERNALPORT}"
+      # uncomment to use .htpasswd login
+      #- "traefik.http.routers.${LABEL}-rtr.middlewares=middlewares-basic-auth@file"
+      # uncomment to use authelia
+      #- "traefik.http.routers.${LABEL}-rtr.middlewares=chain-authelia@file"
+      # uncomment to restrict traefik to localnetwork
+      #- "traefik.http.routers.${LABEL}-rtr.middlewares=onlyLocalNetwork@file"
       # uncomment to autoupdate
       #- "com.centurylinklabs.watchtower.enable=true"
 
   nextcloud_db:
-    image: mariadb:latest
+    #image: mariadb:latest
+    image: mariadb:10.5
     container_name: nextcloud-db
     restart: unless-stopped
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    #command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW --skip-innodb-read-only-compressed --innodb_read_only_compressed=OFF
     volumes:
       - ./db:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - /etc/localtime:/etc/localtime.ro
     ports:
       - 3306:3306
     environment:
