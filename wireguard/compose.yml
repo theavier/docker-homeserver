@@ -1,0 +1,86 @@
+---
+version: '3.5'
+networks:
+  default: 
+    external:
+      name: ${NETWORK}
+services:
+  app_wireguard:
+    image: linuxserver/wireguard:latest
+    container_name: ${LABEL}
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    ports:
+      - 5000:5000
+      - 51820:51820/udp
+    environment:
+    #  - SERVERURL=${CNAME}.${DOMAINNAME}
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}      
+      - SERVERPORT=${SERVERPORT}
+      #- PEERS=1
+      - PEERDNS=${PEERDNS}
+      - INTERNAL_SUBNET=${INTERNAL_SUBNET}
+      - ALLOWEDIPS=${ALLOWEDIPS}
+      - LOG_CONFS=true      
+    volumes:
+      - ./config:/config
+      - /usr/src:/usr/src
+      - /lib/modules:/lib/modules
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+      - net.ipv4.ip_forward=1
+    #labels:
+    #  - "traefik.enable=true"
+    #  - "traefik.http.routers.${LABEL}-rtr.entrypoints=https"
+    #  - "traefik.http.routers.${LABEL}-rtr.rule=Host(`${CNAME}.${DOMAINNAME}`)"
+    #  - "traefik.http.routers.${LABEL}-rtr.tls=true"
+    #  - "traefik.http.routers.${LABEL}-rtr.service=${LABEL}-svc"
+    #  - "traefik.http.services.${LABEL}-svc.loadbalancer.server.port=${INTERNALPORT}"
+      #adding second port for wireguard
+    #  - "traefik.http.routers.${LABEL}-event-rtr.entrypoints=wireguard"
+    #  - "traefik.http.routers.${LABEL}-event-rtr.rule=Host(`${CNAME}.${DOMAINNAME}`)"
+    #  - "traefik.http.routers.${LABEL}-event-rtr.tls=true"
+    #  - "traefik.http.routers.${LABEL}-event-rtr.service=${LABEL}-wireguard-svc"
+    #  - "traefik.http.services.${LABEL}-event-svc.loadbalancer.server.port=51820"
+      # uncomment to use .htpasswd login
+      #- "traefik.http.routers.${LABEL}-rtr.middlewares=middlewares-basic-auth@file"
+      # uncomment to use authelia
+      #- "traefik.http.routers.${LABEL}-rtr.middlewares=chain-authelia@file"
+      # uncomment to restrict traefik to localnetwork
+      #- "traefik.http.routers.${LABEL}-rtr.middlewares=onlyLocalNetwork@file"
+      # uncomment to autoupdate
+      #- "com.centurylinklabs.watchtower.enable=true"
+
+  app_gui:
+     image: ngoduykhanh/wireguard-ui:latest
+     container_name: wireguard-ui
+     depends_on:
+       - app_wireguard
+     cap_add:
+       - NET_ADMIN
+     network_mode: service:app_wireguard
+     environment:
+      - SENDGRID_API_KEY
+      - EMAIL_FROM_ADDRESS
+      - EMAIL_FROM_NAME
+      - SESSION_SECRET
+      - WGUI_USERNAME=${admin}
+      - WGUI_PASSWORD=${password}
+      - WG_CONF_TEMPLATE
+      - WGUI_MANAGE_START=true
+      - WGUI_MANAGE_RESTART=true
+     logging:
+       driver: json-file
+       options:
+         max-size: 50m
+     volumes:
+       - ./db:/app/db
+       - ./config:/etc/wireguard
+
+

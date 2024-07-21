@@ -1,0 +1,35 @@
+---
+networks:
+  default: 
+    name: ${NETWORK}
+    external: true
+services:
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: ${LABEL}
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - ./data:/config
+    ports:
+      - 9696:9696
+    #labels:
+    #  - "traefik.enable=true"
+    #  - "traefik.http.routers.${LABEL}-rtr.entrypoints=https"
+    #  - "traefik.http.routers.${LABEL}-rtr.rule=Host(`${CNAME}.${DOMAINNAME}`)"
+    #  - "traefik.http.routers.${LABEL}-rtr.tls=true"
+    #  - "traefik.http.routers.${LABEL}-rtr.service=${LABEL}-svc"
+    #  - "traefik.http.services.${LABEL}-svc.loadbalancer.server.port=${INTERNALPORT}"
+      # uncomment to use .htpasswd login
+      #- "traefik.http.routers.${LABEL}-rtr.middlewares=middlewares-basic-auth@file"
+      # uncomment to use authelia
+      #- "traefik.http.routers.${LABEL}-rtr.middlewares=chain-authelia@file"
+      # uncomment to restrict traefik to localnetwork
+      #- "traefik.http.routers.${LABEL}-rtr.middlewares=onlyLocalNetwork@file"
+      # uncomment to autoupdate
+      #- "com.centurylinklabs.watchtower.enable=true"
+
+
+
+
