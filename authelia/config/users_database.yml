@@ -1,9 +1,0 @@
----
-users:
-  <myusername>:
-    displayname: "<myusernamedisplayname>"
-    password: "$6$rounds=<mygeneratedpasswordwith6rounds>"
-    email: <myemail>
-    groups:
-      - admins
-      - dev
