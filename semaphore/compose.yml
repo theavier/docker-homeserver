@@ -1,0 +1,40 @@
+---
+networks:
+  default:
+    name: ${NETWORK}
+    external: true
+
+services:
+  semaphore_postgres:
+    restart: unless-stopped
+    image: postgres:14
+    hostname: semaphore_postgres
+    container_name: semaphore_postgres
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: semaphore_user
+      POSTGRES_PASSWORD: ${USER_PASS}
+      POSTGRES_DB: semaphore
+
+  semaphore:
+    ports:
+      - 3000:3000
+    image: semaphoreui/semaphore:latest
+    container_name: semaphore
+    environment:
+      SEMAPHORE_DB_USER: semaphore_user
+      SEMAPHORE_DB_PASS: ${USER_PASS}
+      SEMAPHORE_DB_HOST: semaphore_postgres
+      SEMAPHORE_DB_PORT: 5432
+      SEMAPHORE_DB: semaphore
+      SEMAPHORE_DB_DIALECT: postgres
+      SEMAPHORE_PLAYBOOK_PATH: /tmp/semaphore/
+      SEMAPHORE_ADMIN_PASSWORD: ${USER_PASS}
+      SEMAPHORE_ADMIN_NAME: admin
+      SEMAPHORE_ADMIN_EMAIL: ${ADMINEMAIL}
+      SEMAPHORE_ADMIN: admin
+      SEMAPHORE_ACCESS_KEY_ENCRYPTION: <accesskey>
+      ANSIBLE_HOST_KEY_CHECKING: False
+    depends_on:
+      - semaphore_postgres
