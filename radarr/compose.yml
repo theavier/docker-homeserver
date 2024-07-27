@@ -12,7 +12,7 @@ services:
       - no-new-privileges:true
     volumes:
       - ./data:/config
-      - /mnt/media/_down:/data
+      - /mnt/media:/data
      
     ports:
       - 7878:7878

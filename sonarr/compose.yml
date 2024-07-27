@@ -13,7 +13,7 @@ services:
       - no-new-privileges:true
     volumes:
       - .config:/config
-      - /mnt/media/_down:/data
+      - /mnt/media:/data
     ports:
       - 8989:8989
     environment:
