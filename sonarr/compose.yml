@@ -1,9 +1,8 @@
 ---
-version: '3.5'
 networks:
-  default: 
-    external:
-      name: ${NETWORK}
+  default:
+    name: ${NETWORK}
+    external: true
 services:
   sonarr:
     image: linuxserver/sonarr:latest
