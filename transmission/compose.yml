@@ -18,7 +18,7 @@ services:
     - 8.8.4.4
   volumes:
     - /etc/localtime:/etc/localtime:ro
-    - /mnt/media/_down:/data
+    - /mnt/media:/data
   environment:
     - OPENVPN_PROVIDER=NORDVPN
     - OPENVPN_USERNAME=${USERNAME} #JAW71dre146YFPjRwayXp1pq
