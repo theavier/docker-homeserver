@@ -13,7 +13,7 @@ services:
     volumes:
       - ./config:/config
       - /mnt/media:/data
-     
+      - ./scripts:/scripts
     ports:
       - 7878:7878
     environment:
