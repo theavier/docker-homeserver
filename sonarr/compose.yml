@@ -13,6 +13,7 @@ services:
     volumes:
       - ./config:/config
       - /mnt/media:/data
+      - ./scripts:/scripts
     ports:
       - 8989:8989
     environment:
