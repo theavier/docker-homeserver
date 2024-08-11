@@ -16,7 +16,7 @@ services:
       - TZ=${TZ}
       #- BASE_URL=/ombi
     volumes:
-      - ./appdata/config:/config
+      - ./config:/config
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.${LABEL}-rtr.entrypoints=https"
