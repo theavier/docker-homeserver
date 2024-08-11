@@ -17,6 +17,8 @@ services:
       #- BASE_URL=/ombi
     volumes:
       - ./config:/config
+    ports:
+      - "3579:3579"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.${LABEL}-rtr.entrypoints=https"
