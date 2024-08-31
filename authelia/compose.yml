@@ -1,9 +1,8 @@
 ---
-version: '3.5'
 networks:
   default:
-    external:
-      name: ${NETWORK}
+    external: true
+    name: ${NETWORK}
 services:
   authelia:
      #image: authelia/authelia:4.2.0

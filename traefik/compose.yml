@@ -1,9 +1,8 @@
-version: "3.5"
-
+---
 networks:
   t2_proxy:
-    external:
-      name: t2_proxy
+    external: true
+    name: t2_proxy
   default:
     driver: bridge
 

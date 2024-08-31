@@ -1,9 +1,8 @@
-version: '3.7'
-
+---
 networks:
   default:
-    external:
-      name: ${NETWORK}
+    external: true
+    name: ${NETWORK}
 
 services:
   minio:
