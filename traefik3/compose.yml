@@ -40,6 +40,7 @@ services:
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
       - --entrypoints.traefik.address=:8080
+      - --entrypoints.eventserver.address=:9000
       - --entrypoints.websecure.http.tls=true
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
       - --entrypoints.web.http.redirections.entrypoint.scheme=https
@@ -90,6 +91,9 @@ services:
       - target: 8080 # need to enable --api.insecure=true
         published: 8085
         protocol: tcp
+        mode: host
+      - target: 9000
+        published: 9000
         mode: host
     volumes:
       - ./traefik3/rules/$HOSTNAME:/rules # Dynamic File Provider directory
