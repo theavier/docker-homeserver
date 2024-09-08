@@ -12,20 +12,21 @@ services:
       - no-new-privileges:true
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.${LABEL}-rtr.entrypoints=https"
+      - "traefik.http.routers.${LABEL}-rtr.entrypoints=websecure"
       - "traefik.http.routers.${LABEL}-rtr.rule=Host(`${CNAME}.${DOMAINNAME}`)"
       - "traefik.http.routers.${LABEL}-rtr.tls=true"
       - "traefik.http.routers.${LABEL}-rtr.service=${LABEL}-svc"
       - "traefik.http.services.${LABEL}-svc.loadbalancer.server.port=${INTERNALPORT}"
-      # uncomment to use .htpasswd login
-      #- "traefik.http.routers.${LABEL}-rtr.middlewares=middlewares-basic-auth@file"
       # uncomment to use authelia
       #- "traefik.http.routers.${LABEL}-rtr.middlewares=chain-authelia@file"
       # uncomment to restrict traefik to localnetwork
       #- "traefik.http.routers.${LABEL}-rtr.middlewares=onlyLocalNetwork@file"
       # uncomment to autoupdate
       #- "com.centurylinklabs.watchtower.enable=true"
-
+      # uncomment to enable secure headers and basic auth
+      - "traefik.http.routers.${LABEL}-rtr.middlewares=chain-basic-auth@file"
+      # uncomment to enable secure headers, no auth
+      #- "traefik.http.routers.${LABEL}-rtr.middlewares=middlewares-secure-headers@file"
 
 
 
