@@ -8,25 +8,35 @@ services:
   minio:
     container_name: ${LABEL}
     #image: "dimianstudio/minio-arm" #for raspberry
-    image: minio/minio
+    #image: minio/minio
+    image: quay.io/minio/minio:RELEASE.2023-11-01T01-57-10Z-cpuv1 #for older cpu
+    #image: docker.io/bitnami/minio:2022
     restart: unless-stopped
 #    ports:
 #      - "9000:9000"
+#      - "9001:9001"
     security_opt:
       - no-new-privileges:true
     volumes:
        - /mnt/media/docker/minio:/export
        - ./minio_config:/root/.minio
     environment:
-      MINIO_ACCESS_KEY: $MINIO_ACCESS_KEY
-      MINIO_SECRET_KEY: $MINIO_SECRET_KEY
-      MINIO_DOMAIN: $MINIO_DOMAIN
+      MINIO_ROOT_USER: $MINIO_ACCESS_KEY
+      MINIO_ROOT_PASSWORD: $MINIO_SECRET_KEY
+    #  MINIO_DOMAIN: $MINIO_DOMAIN
     #  MINIO_HTTP_TRACE: /tmp/minio.log
-    command: server /export
+    #command: server /export
+    command: server /data --console-address ":9001"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.${LABEL}-rtr.entrypoints=https"
+      - "traefik.http.routers.${LABEL}-rtr.entrypoints=websecure"
       - "traefik.http.routers.${LABEL}-rtr.rule=Host(`${CNAME}.$DOMAINNAME`)"
       - "traefik.http.routers.${LABEL}-rtr.tls=true"
       - "traefik.http.routers.${LABEL}-rtr.service=${LABEL}-svc"
       - "traefik.http.services.${LABEL}-svc.loadbalancer.server.port=${INTERNALPORT}"
+      #adding second port for API
+      - "traefik.http.routers.${LABEL}-event-rtr.entrypoints=eventserver"
+      - "traefik.http.routers.${LABEL}-event-rtr.rule=Host(`${CNAME}.${DOMAINNAME}`)"
+      - "traefik.http.routers.${LABEL}-event-rtr.tls=true"
+      - "traefik.http.routers.${LABEL}-event-rtr.service=${LABEL}-event-svc"
+      - "traefik.http.services.${LABEL}-event-svc.loadbalancer.server.port=9000"
