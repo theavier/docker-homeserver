@@ -23,5 +23,5 @@ services:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
       - /:/rootfs:ro
-    expose:
-      - 9100
+    ports:
+      - 9100:9100

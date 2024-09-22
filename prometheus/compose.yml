@@ -3,11 +3,6 @@ networks:
   default:
     name: ${NETWORK}
     external: true
-#volumes:
-  #prometheus-data:
-  #  driver: local
-  #grafana-data:
-  #  driver: local
 
 services:
   prometheus:
@@ -15,6 +10,7 @@ services:
     container_name: prometheus
     ports:
       - "9090:9090"
+    user: root # prometheus runs as user nobody 65534
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - ./prometheus-data:/prometheus
@@ -31,14 +27,8 @@ services:
     container_name: grafana
     ports:
       - "3003:3000"
-    #user:
-    #  - "1000"
+    user: "0:0" # grafana runs as user 472, but part of group 0. Use this for folder permissions to work.
     volumes:
       - ./grafana-data:/var/lib/grafana
-    #  - ./config:/config
-    #  - ./grafana.ini:/etc/grafana/grafana.ini:ro
-    #environment:
-    #  - GF_PATHS_CONFIG=/config/custom.ini
-    #  - GF_SECURITY_ADMIN_PASSWORD="admin2"
-    #  - GF_SECURITY_ADMIN_USER="admin2"
+      - ./grafana.ini:/etc/grafana/grafana.ini
     restart: unless-stopped
