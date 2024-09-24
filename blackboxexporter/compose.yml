@@ -1,0 +1,14 @@
+networks:
+  default:
+    name: "t3_proxy"
+    external: true
+services:
+  blackbox:
+    image: prom/blackbox-exporter
+    container_name: blackboxexporter
+    ports:
+    - 9115:9115
+    command:
+    - --config.file=/etc/blackbox/blackbox.yml
+    volumes:
+    - ./blackbox.yml:/etc/blackbox/blackbox.yml
