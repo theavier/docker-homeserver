@@ -1,0 +1,44 @@
+---
+networks:
+  default:
+    name: ${NETWORK}
+    external: true
+services:
+  nbzget:
+    image: ghcr.io/linuxserver/nzbget
+    container_name: ${LABEL}
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - ./config:/config
+      - /mnt/media:/data
+    ports:
+      - 6789:6789
+    environment:
+      - PUID=${PUID}
+      - GUID=${PGID}
+      - TZ=${TZ}
+      - UMASK=${UMASK}
+      - NZBGET_USER=${NZBGET_USER} # optional
+      # Specify the password for web authentication.
+      - NZBGET_PASS=${NZBGET_PASS} # optional
+    #labels:
+    #  - "traefik.enable=true"
+    #  - "traefik.http.routers.${LABEL}-rtr.entrypoints=https"
+    #  - "traefik.http.routers.${LABEL}-rtr.rule=Host(`${CNAME}.${DOMAINNAME}`)"
+    #  - "traefik.http.routers.${LABEL}-rtr.tls=true"
+    #  - "traefik.http.routers.${LABEL}-rtr.service=${LABEL}-svc"
+    #  - "traefik.http.services.${LABEL}-svc.loadbalancer.server.port=${INTERNALPORT}"
+      # uncomment to use .htpasswd login
+      #- "traefik.http.routers.${LABEL}-rtr.middlewares=middlewares-basic-auth@file"
+      # uncomment to use authelia
+      #- "traefik.http.routers.${LABEL}-rtr.middlewares=chain-authelia@file"
+      # uncomment to restrict traefik to localnetwork
+      #- "traefik.http.routers.${LABEL}-rtr.middlewares=onlyLocalNetwork@file"
+      # uncomment to autoupdate
+      #- "com.centurylinklabs.watchtower.enable=true"
+
+
+
+
