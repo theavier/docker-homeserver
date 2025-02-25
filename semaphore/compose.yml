@@ -11,7 +11,7 @@ services:
     hostname: semaphore_postgres
     container_name: semaphore_postgres
     volumes:
-      - ./postgres:/var/lib/postgresql/data
+      - ./config:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: semaphore_user
       POSTGRES_PASSWORD: ${USER_PASS}
@@ -19,7 +19,7 @@ services:
 
   semaphore:
     ports:
-      - 3000:3000
+      - 3001:3000
     image: semaphoreui/semaphore:latest
     container_name: semaphore
     environment:
@@ -34,7 +34,7 @@ services:
       SEMAPHORE_ADMIN_NAME: admin
       SEMAPHORE_ADMIN_EMAIL: ${ADMINEMAIL}
       SEMAPHORE_ADMIN: admin
-      SEMAPHORE_ACCESS_KEY_ENCRYPTION: <accesskey>
+      SEMAPHORE_ACCESS_KEY_ENCRYPTION: l9FfbzM8plU1jf63omraZuRpJrCztWdFVb0rDgkgeVw=
       ANSIBLE_HOST_KEY_CHECKING: False
     depends_on:
       - semaphore_postgres
